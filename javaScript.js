@@ -89,25 +89,24 @@ const createTaskItem = (taskText, taskTime, taskId) => {
     if (timeRemaining > 0) {
         setTimeout(() => {
             // Notify user when task time is due
-            if (Notification.permission === 'granted') {
-                new Notification(`Task "${taskText}" is due now!`);
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') {
-                        new Notification(`Task "${taskText}" is due now!`);
-                    }
-                });
-            }
+            showNotification(`Task "${taskText}" is due now!`);
         }, timeRemaining);
     }
 };
 
-// Request permission for notifications when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-        Notification.requestPermission();
+function showNotification(message) {
+    if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+            new Notification(message);
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification(message);
+                }
+            });
+        }
     }
-});
+}
 
 addTaskButton.addEventListener('click', () => {
     const taskText = newTaskInput.value.trim();
